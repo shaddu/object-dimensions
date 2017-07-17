@@ -1,44 +1,21 @@
-import pgmagick as pg
+import numpy as np
+import imutils
+import cv2
 
-def trans_mask_sobel(img):
-    """ Generate a transparency mask for a given image """
+image_path = "images/washing_machine.jpg"
+image = cv2.imread(image_path)
+hsv_image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+h, s, v = cv2.split(hsv_image)
+v.fill(200)
+hsv_image = cv2.merge([h,s,v])
 
-    image = pg.Image(img)
+rgb_image = cv2.cvtColor(image, cv2.COLOR_HSV2BGR)
+cv2.imshow("remove shadows",rgb_image)
+gray = cv2.cvtColor(rgb_image, cv2.COLOR_BGR2GRAY)
+# normalize step needs to be added
+gray = cv2.GaussianBlur(gray, (7, 7), 0)
+# if canny doesnt work then use sobel
+edged = cv2.Canny(gray, 50, 100)
+edged = cv2.dilate(edged, None, iterations=1)
 
-    # Find object
-    image.negate()
-    image.edge()
-    image.blur(1)
-    image.threshold(24)
-    image.adaptiveThreshold(5, 5, 5)
-
-    # Fill background
-    image.fillColor('magenta')
-    w, h = image.size().width(), image.size().height()
-    image.floodFillColor('0x0', 'magenta')
-    image.floodFillColor('0x0+%s+0' % (w-1), 'magenta')
-    image.floodFillColor('0x0+0+%s' % (h-1), 'magenta')
-    image.floodFillColor('0x0+%s+%s' % (w-1, h-1), 'magenta')
-
-    image.transparent('magenta')
-    return image
-
-def alpha_composite(image, mask):
-    """ Composite two images together by overriding one opacity channel """
-
-    compos = pg.Image(mask)
-    compos.composite(
-        image,
-        image.size(),
-        pg.CompositeOperator.CopyOpacityCompositeOp
-    )
-    return compos
-
-def remove_background(filename):
-    """ Remove the background of the image in 'filename' """
-
-    img = pg.Image(filename)
-    transmask = trans_mask_sobel(img)
-    img = alphacomposite(transmask, img)
-    img.trim()
-    img.write('out.png')
+cv2.waitKey(0)
