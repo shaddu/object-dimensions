@@ -26,7 +26,7 @@ ap.add_argument("-w", "--width", type=float, required=True,
 # args = vars(ap.parse_args())
 #for debugging
 args = {}
-args["image"] = "images/example_03.png"
+args["image"] = "images/A4.jpg"
 args["width"] = 8.27
 
 

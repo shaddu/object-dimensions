@@ -2,7 +2,17 @@ import imutils
 import cv2
 
 image_path = "images/washing_machine.jpg"
-image = cv2.imread(image_path)
+image_path2 = "images/A4.jpg"
+
+image = cv2.imread(image_path2)
+print image.shape
+
+dim = (525,700)
+image = cv2.resize(image, dim, interpolation = cv2.INTER_AREA)
+print image.shape
+cv2.imshow("resized", image)
+cv2.waitKey(0)
+
 gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 cv2.imshow("gray", gray)
 cv2.waitKey(0)
